@@ -1,0 +1,1474 @@
+Software-Handbuch 
+C-Interface 
+Schnittstellenprotokoll für 
+C-Geräte 
+Ab Software-Revision 7.10 
+Version 1.08.1
+Diese Dokumentation unterliegt dem Urheberrecht der KBAMetronic AG. Die Dokumentation darf ohne vorherige 
+schriftliche Zustimmung der KBA-Metronic AG weder 
+vervielfältigt noch im Widerspruch zu deren berechtigten 
+Interesse verwendet werden. 
+KBA-Metronic AG 
+Benzstraße 11, 
+97209 Veitshöchheim 
+Germany 
+Phone: +49 (0) 931 / 9085-0 
+Fax: +49 (0) 931 / 9085-100 
+Email: info@kba-metronic.com
+http:\\www.kba-metronic.com 
+
+C-Interface
+Inhaltsverzeichnis
+Inhaltsverzeichnis 
+Inhaltsverzeichnis..........................................................................................................3 
+1 Einleitung .................................................................................................................5 
+2 Empfänger- und Senderadressen ..........................................................................7 
+2.1 SystemID - Adressen...................................................................................................7 
+2.2 ID - Adressen...............................................................................................................7 
+3 Übertragungsmedien ..............................................................................................9 
+3.1 Prinzip der Datenübertragung......................................................................................9 
+3.2 Kommunikation direkt über die Serielle Schnittstelle...................................................9 
+3.3 Kommunikation über die Datenbanksoftware C-Base ...............................................11 
+3.4 Kommunikation über das “Comm-Programm” ...........................................................12 
+4 Befehle des Kommunikationsmoduls “Linie”.....................................................15 
+4.1 ^RC – Request - Daten anfordern .............................................................................16 
+4.2 ^RE – Report Event – Ereignismaske festlegen........................................................17 
+4.3 ^FC – Format Konfiguration.......................................................................................18 
+4.4 ^FH – FormatHeads – Konfiguration Druckköpfe ......................................................19 
+4.5 ^LF – LoadFormat – Konfiguration laden...................................................................20 
+4.6 ^SF – SaveFormat – Konfiguration Speichern...........................................................20 
+4.7 ^ST – SystemState – Druckbereitschaft aktivieren / deaktivieren .............................21 
+4.8 ^PL – PrintLabel – Drucktext laden............................................................................22 
+4.9 ^SL – SaveLabel – Drucktext speichern....................................................................22 
+4.10 ^PP – PrintProcess – Druckfreigabe / Drucksperrung ...............................................23 
+4.11 ^PT – PrinterType......................................................................................................24 
+4.12 ^PO – PS_Position ....................................................................................................25 
+4.13 ^DE – DataField – Datenfelder setzten......................................................................26 
+4.14 ^DF – DataField2 – Datenfelder mit fixer Feldlänge setzen ......................................29 
+4.15 ^DB – DataField3 – Mehrfach druckbare Datenfelder setzen....................................29 
+4.16 ^DX – Datenfelder löschen ........................................................................................29 
+4.17 ^PC – ProdCounter – Produktzähler..........................................................................30 
+4.18 ^DC – Druckfortschritt................................................................................................30 
+4.19 ^IN – Inputs – Eingangssignale .................................................................................31 
+4.20 ^SP – Programm auswählen .....................................................................................31 
+4.21 ^DO – Delete Object – Objekt löschen ......................................................................32 
+4.22 ^CO – Create Object – neues Objekt anlegen...........................................................32 
+4.23 ^LI – Line – Linienkonfiguration übertragen..............................................................34 
+4.24 ^VS – Versions - Versionen abfragen........................................................................34 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 3
+C-Interface 
+Inhaltsverzeichnis 
+5 Befehle des Kommunikationsmoduls “Disk/System”........................................35 
+5.1 ^RC – Request – Daten anfordern.............................................................................35 
+5.2 ^DR – Dir Request – Inhaltsverzeichnis abfragen .....................................................36 
+5.3 ^DI – Dir Info – Inhaltsverzeichnis übertragen ...........................................................36 
+5.4 ^DM – Dir Make – Verzeichnis anlegen.....................................................................37 
+5.5 ^DD – Dir Delete – Verzeichnis löschen ....................................................................37 
+5.6 ^FD – FileDelete – Datei löschen ..............................................................................38 
+5.7 ^FR – File Request – Einleiten einer Kopie ...............................................................38 
+5.8 ^FT – FileTransfer – Datei kopieren ..........................................................................39 
+5.9 ^FB – File Blockcheck – Überprüfung des Filetransfer..............................................40 
+5.10 ^FX – Filetransfer Done – Rückmeldung über erfolgreichen Filetransfer ..................40 
+5.11 ^RB – Request Backup – Sicherungskopien durchführen .........................................40 
+5.12 ^RR – Request Restore – Sicherungskopien laden...................................................41 
+5.13 ^ID– ID-Adressen übertragen ....................................................................................41 
+5.14 ^LI – Line – Linienkonfiguration übertragen..............................................................42 
+5.15 ^TD– TimeDate – Uhrzeit und Datum setzen ............................................................42 
+5.16 ^SC – System Configuration......................................................................................43 
+5.17 ^SI – Systeminformation............................................................................................44 
+5.18 ^AC – Auto-Configuration ..........................................................................................45 
+5.19 ^BO – Boot - System Booten.....................................................................................45 
+5.20 ^RF – Register File ....................................................................................................46 
+6 Befehle des Kommunikationsmoduls “ErrorHandler” .......................................47 
+6.1 ^RC – Request – Daten anfordern.............................................................................47 
+6.2 ^CL – ClearErrorList - Fehlerliste löschen .................................................................47 
+6.3 ^EL – ErrorList - Fehlerliste übertragen .....................................................................48 
+6.4 ^ER – ErrorRequest - Fehlerrequest .........................................................................48 
+7 Befehle des Signal-Managers...............................................................................49 
+7.1 ^CS3 – ProgPar-Fenstereinstellungen ......................................................................49 
+7.1.1 Übertragungsparameter..............................................................................49 
+7.1.2 Übertragen des Druckmodes ......................................................................49 
+7.1.3 Übertragen des Druckmarkenteilers ...........................................................50 
+7.1.4 Übertragen der Distanz...............................................................................50 
+7.1.5 Übertragung der DM- Parameter der WSM ................................................50 
+7.1.6 Übertragung der Flugzeit ............................................................................50 
+7.1.7 Übertragung des OPS- Mode .....................................................................50 
+7.2 Textlisten-Parameter - Programm “TextList”..............................................................52 
+7.2.1 Textlistengröße ...........................................................................................52 
+7.2.2 Übertragen der Texte..................................................................................52 
+7.2.3 Textliste löschen .........................................................................................52 
+7.3 ^CS4 – ExtText-Parameter – Programm “ExtText”....................................................53 
+7.3.1 Übertragungsparameter..............................................................................53 
+7.3.2 Übertragen der Texte..................................................................................53 
+4 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Einleitung
+1 Einleitung 
+Vorwort 
+Mit dieser Schnittstellenbeschreibung steht Ihnen ein praxiserprobter, betriebssicherer, leicht zu 
+programmierender Befehlssatz zur Verfügung. 
+Hier können Befehle direkt über die serielle Schnittstelle, über das „Comm-Programm“, sowie 
+über unsere Datenbanksoftware C-Base zum alphaJET C bzw. betaJET C übertragen werden. 
+Diese Dokumentation beinhaltet alle Informationen, die eine reibungslose Installation bzw. 
+Programmierung gewährleisten. 
+Über dieses Schnittstellenprotokoll 
+Das Schnittstellenprotokoll hat das Ziel, die Möglichkeiten und Funktionen des angebotenen 
+Befehlssatzes zu erläutern. 
+Diese Beschreibung setzt voraus, dass der Leser mit den Strukturen unserer Tintenstrahldrucker 
+alphaJET C bzw. betaJET C vertraut ist. 
+Bevor Sie mit dem Befehlssatz arbeiten, sollten Sie unbedingt diese Dokumentation mindestens 
+einmal vollständig durchgelesen haben. Sie wurde bewusst kurz gefasst, um den 
+Einarbeitungsaufwand zu minimieren. 
+Ein mehrfaches Durcharbeiten der Betriebsanleitung wird empfohlen, da oft beim erstmaligen 
+Durchlesen wichtige Details übersehen werden. 
+Konstruktive Änderungen, die dem technischen Fortschritt dienen, behalten wir uns vor. Das 
+Urheberrecht an dieser Bedienungsanleitung gehört der KBA-METRONIC AG. Vervielfältigungen 
+oder Weiterleitungen an dritte Personen sind unzulässig bzw. bedürfen unserer Genehmigung. 
+Technischer Support 
+Falls Ihre Anwendung einmal nicht so arbeitet wie Sie es erwarten und Sie auch durch 
+Zuhilfenahme der Betriebsanleitung Ihres Druckers das Problem nicht beheben können, wenden 
+Sie sich bitte an unsere Technische Hotline. 
+Unsere Technische Hotline erreichen Sie von Montag bis Freitag zwischen 8.00 Uhr und 17:00 Uhr 
+unter: 
+Telefon: 09 31 / 90 85 - 206 
+Fax: 09 31 / 90 85 - 251 
+E-mail: technical-support@kba-metronic.com 
+Unser Support beschränkt sich ausschließlich auf den hier beschriebenen Befehlssatz und die 
+damit verbundenen Druckgeräte. 
+Bitte haben Sie Verständnis, dass wir spezielle Fragen zu Ihrem Betriebssystem bzw. Ihrer 
+Programmiersprache nicht abdecken können. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 5
+C-Interface 
+Einleitung 
+Lizenzbedingungen und Haftung 
+Diese Dokumentation ist urheberrechtliches Eigentum der KBA-Metronic AG, Veitshöchheim. Sie 
+darf weder komplett, noch auszugsweise, ohne Zustimmung der KBA-Metronic AG an Dritte 
+weitergeben werden. 
+Obwohl der Befehlssatz mit größter Sorgfalt entwickelt und intensiv getestet wurde, übernimmt die 
+KBA-Metronic AG keine Garantie der Eignung für irgendeinen bestimmten Zweck. 
+Gewährleistungsansprüche beschränken sich auf das Recht, Nachbesserungen zu verlangen. Die 
+Haftung für etwaige Schäden, die durch die Verwendung dieses Befehlssatzes entstanden sein 
+könnten, beschränkt sich auf den Fall des Vorsatzes. 
+6 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Empfänger- und Senderadressen
+2 Empfänger- und Senderadressen 
+Die Adresse eines Gerätes besteht generell aus zwei Zeichen, der SystemID, sowie der ID. 
+2.1 SystemID - Adressen 
+Jedes Gerät bekommt eine SystemID zugewiesen, die den eigentlichen Gerätenamen darstellt. 
+Diese wird bereits bei der Initialisierung des Gesamtsystems vergeben. Für die SystemID können 
+ASCII-Zeichen im Bereich zwischen „a..z“ und „A...Z“ vergeben werden. 
+Hinweis 
+Mit ! werden alle Geräte im Verbund angesprochen! 
+Mit 1 werden die an COM1 angeschlossenen Geräte angesprochen! 
+Mit 2 werden die an COM2 angeschlossenen Geräte angesprochen! 
+2.2 ID - Adressen 
+Für eine gezielte Kommunikation sind die Geräte wiederum in physikalische Einheiten (Module) 
+aufgeteilt, wobei jeder Einheit eine eigene ID-Adresse zugewiesen wurde: 
+• Das Kommunikationsmodul “Linie”:
+Befehle für die Kommunikation mit Druckgeräten, die den zur Ausführung kommenden 
+Drucktext, sowie die erforderliche Konfiguration bestimmen, werden linienbezogen angefordert. 
+Je nach Anwendung ist die Control-Unit eines alphaJET C bzw. betaJET C, für eine oder auch 
+zwei Produktionslinien konfiguriert. Dabei ist als ID für Linie 1 „1“ sowie für Linie 2 „2“
+festgelegt. 
+• Das Kommunikationsmodul Disk/System: 
+Mit einem separatem Befehlssatz wird das Kommunikationsmodul Disk/System angesprochen, 
+das durch die ID „D“ festgelegt ist. Diese Befehle beinhalten alle Aktivitäten, die die 
+Verzeichnis-, sowie Dateistruktur des Druckers betreffen. 
+• Das Kommunikationsmodul ErrorHandler: 
+Mit einem separatem Befehlssatz wird das Kommunikationsmodul ErrorHandler 
+angesprochen, das durch die ID „E“ festgelegt ist. Diese Befehle beinhalten alle Aktivitäten, 
+die die Fehlerprotokollierung des Druckers betreffen. 
+• Weitere Kommunikationsmodule: 
+Für die interne Kommunikation sind weitere ID-Adressen im Drucker festgelegt. Mit diesen 
+Modulen kann von externer Stelle allerdings nicht kommuniziert werden. 
+Für den ID-Adressenteil eines PCs, einer SPS o.ä., können wahlweise ASCII-Zeichen im 
+Bereich von „a..z“ und „A...Z“ verwendet werden. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 7
+C-Interface 
+Empfänger- und Senderadressen 
+Beispiele: 
+Angesprochenes Gerät SystemID ID Geräteadresse 
+Kommunikationsmodul Linie 1 des Druckers A 1 A1 
+Kommunikationsmodul Linie 2 des Druckers A 2 A2 
+Kommunikationsmodul Disk/System des Druckers A D AD 
+PC P C PC 
+Für einen Drucker mit einer angenommenen SystemID von A, der für zwei Produktionslinien 
+konfiguriert ist, gelten die Adressen A1, A2 sowie AD. In obigem Beispiel wurden für den PC die 
+SystemID mit P sowie die ID mit C festgelegt. 
+8 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Übertragungsmedien
+3 Übertragungsmedien 
+Um mit den Druckgeräten alphaJET C bzw. betaJET C zu kommunizieren, stehen Ihnen folgende 
+Möglichkeiten zur Verfügung: 
+• Befehle direkt über die Serielle Schnittstelle zu übertragen, 
+• über das „Comm-Programm“, 
+• sowie über die Metronic Datenbanksoftware C-Base.
+3.1 Prinzip der Datenübertragung 
+Die Datenübertragung zwischen den einzelnen Stationen (PC, Druckgeräte, SPS, u.ä.) erfolgt 
+nach dem ISO-7 Schichtmodell. Dabei werden einzelne Pakete zwischen den Stationen als 
+abgeschlossene Einheiten übertragen. Ein Paket besteht immer aus dem Paketrahmen sowie 
+einem Paketinhalt. 
+• Der Paketrahmen ist abhängig von der Art der Übertragungsvariante. Er sichert und quittiert 
+die Übertragung mit einigen reservierten Zeichen. 
+• Der Paketinhalt ist für alle Übertragungsvarianten gleich. Er beginnt immer mit dem 
+eigentlichen zweistelligen Befehl, dem zur Kennzeichnung ein „^“ vorangestellt ist. Den 
+meisten Befehlen folgt ein oder mehrere, dem Befehl zugehörige Parameter (siehe Kap. 4, 5 
+und 6). 
+3.2 Kommunikation direkt über die Serielle Schnittstelle 
+Folgender Auszug des ASCII-Zeichensatzes zeigt die bei der Kommunikation über die Serielle 
+Schnittstelle verwendeten Steuerzeichen: 
+ASCII-Nummer Hex-Wert Abkürzung Name 
+1 01 SOH Start of Header 
+3 03 ETX End of Text 
+4 04 EOT End of Transmission 
+6 06 ACK Acknowledge 
+21 15 NAK Negative Acknowledge 
+26 1A SUB Substitute 
+Bei der Kommunikation über die Serielle Schnittstelle beginnt das Paket bzw. der Paketrahmen 
+immer mit dem ASCII-Steuerzeichen SOH und endet – außer bei größeren Paketen – immer mit 
+EOT. 
+Die folgenden vier Zeichen nach dem SOH bestehen aus der SystemID und ID des Empfängers, 
+sowie der SystemID und ID des Senders. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 9
+C-Interface 
+Übertragungsmedien 
+Zu einem vollständigen Paketrahmen gehört nach einem korrekt erhaltenen Paket, die Quittierung 
+des Empfängers mit ACK (Acknowledge). Bei einem Übertragungsfehler gibt der Empfänger ein 
+NAK (Negative-Acknowledge) aus, worauf der Sender das Paket wiederholen muss. 
+Hinweis 
+Jeder Befehl (auch ein Paket ohne Daten: <SOH><EOT>) muss mit einem ACK oder 
+NAK beantwortet werden. 
+Schickt z.B. der Drucker einen angeforderten Datensatz (Antwort auf den Befehl 
+"Request Daten" ^RC) an eine Steuereinheit, muss diese das Paket mit ACK oder NAK 
+beantworten. Geschieht das nicht, wird die Kommunikation verzögert. 
+Beispiel: 
+Datenfluss Start Empfänger 
+(SysID / ID) 
+Sender 
+(SysID / ID) 
+Befehl Ende 
+ 
+SOH A1 PC siehe Kap. 4 und 5 EOT 
+ 
+ACK 
+Von einem PC aus wird ein Befehl mit eventuellen Parametern an einen Drucker mit der SystemID 
+„A“ übertragen. Über die ID-Adresse „1“ wird am Drucker das Kommunikationsmodul „Linie 1“
+angesprochen. Der angesprochene Drucker quittiert das korrekt erhaltene Paket mit ACK. 
+Paketgröße 
+Der Paketinhalt kann als maximale Datenmenge 512 Bytes auf der Seriellen Schnittstelle 
+enthalten. Sollen mehr als 512 Bytes in einem Datenstrom übertragen werden, so müssen 
+mehrere Pakete gebildet werden. 
+Endet ein Paket statt mit EOT mit dem Zeichen ETX, so bedeutet dies, dass das folgende Paket 
+noch zum selben Datenstrom gehört. Das letzte Paket wird mit EOT beendet. Jedes einzelne 
+Paket muss auch hier mit ACK bzw. NAK quittiert werden. 
+Die Empfangsroutine muss also immer über einen Eingangspuffer von 516 Byte verfügen 
+(Eingangspuffer = Paketinhalt + Empfangsadresse + Sendeadresse). Eine komplette 
+Befehlssequenz bis EOT kann bis zu 65000 Byte enthalten! 
+Substitution 
+Wenn Daten übertragen werden sollen, die dem Wert eines Steuerzeichen entsprechen, muss 
+jedes Datum mit 0x20 verodert und das Steuerzeichen SUB vorangestellt werden. 
+Die Zeichen SOH, EOT, ETX, SUB, ACK, NAK müssen substituiert werden, alle anderen Zeichen 
+zwischen 0 und 0x1f können aber auch substituiert werden (einfaches Handling)! 
+10 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Übertragungsmedien
+3.3 Kommunikation über die Datenbanksoftware C-Base
+Neben den eigentlichen Druckdaten der Datenbank lassen sich auch Druckerbefehle übertragen. 
+Bei der Befehlsübertragung über die Datenbanksoftware C-Base muss das zu übertragende 
+Kommando mit einem speziellen Befehl im Index 1 des Datensatzes eingeleitet werden. 
+Durch diesen Befehl, wird dem durch C-Base angewähltem Drucker mitgeteilt, welches 
+Kommunikationsmodul des Druckers angesprochen werden soll. 
+Diesem Befehl folgt Index 2 der Datenbank, der den eigentlichen Befehl und die eventuell 
+erforderlichen Parameter beinhaltet. 
+Folgende Formate sind festgelegt: 
+Datensatzindex 1 
+Paketstart 
+Datensatzindex 2 
+Befehl / Parameter 
+Mscript siehe Kap. 4 (Linienbefehle) 
+Mscript@D siehe Kap. 5 (Disk/System – Befehle) 
+Mscript@E siehe Kap. 6 (ErrorHandler – Befehle) 
+Durch Anwahl der Schaltfläche „Druck Starten“ werden die ausgewählten Datensätze an den 
+Drucker übermittelt. 
+Rückmeldungen, die z.B. durch den Request-Befehl veranlasst wurden, können auf dem 
+Bildschirm des PCs in einem separaten Fenster visualisiert werden. 
+Hierzu muss lediglich im Verzeichnis C-Base eine Datei „out.lst“ vorhanden sein. Diese kann 
+durch Kopie und Umbenennen einer vorhandenen Datei erzeugt werden. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 11
+C-Interface 
+Übertragungsmedien 
+3.4 Kommunikation über das “Comm-Programm” 
+Das „Comm-Programm“ ist Bestandteil des Verzeichnisses c:\cu, welches bei der Installation 
+sowohl auf Druckgeräteseite bzw. auf PC-Seite angelegt wurde. 
+Der Aufruf von einem Drucker erfolgt über die DOS-Ebene. Eine Änderung der Konfiguration ist 
+nicht erforderlich, da diese bereits im Drucker hinterlegt ist. 
+Erfolgt der Aufruf über die Software des PC-Programms von der Windows-Ebene aus, sollte der 
+verfügbare XMS-Speicher >= 1024 Byte eingestellt sein. 
+Für den konventionellen Speicher (maximale Größe für ausführbares Programm) sind 500 KB 
+ausreichend. Durch den Aufruf mit „comm.exe“ über die DOS-Eingabeaufforderung, wird der 
+Kontakt mit den über die Schnittstellen verbundenen Geräte hergestellt. Das Programm ist für den 
+Empfang von Daten bereit. 
+Zum Empfangen von Daten unter Windows, 
+sollte vorher in einer Verknüpfung der Datei 
+„Comm.exe“ die Speichereigenschaften 
+gemäß der nebenstehenden Abbildung 
+eingestellt werden. 
+Mit „Comm.exe“ wird das Programm gestartet 
+und ist für den Empfang von Daten bereit. 
+Hinweis 
+Das Versenden von Befehlen ist durch den Aufruf über die Windows-Ebene nicht zu 
+empfehlen. 
+Das „Comm-Programm“ kann für zwei Anwendungen eingesetzt werden: 
+1. Befehle versenden 
+Mit dem Aufruf „COMM“ gefolgt von einem Leerzeichen wird das Programm aufgerufen. Der 
+Paketrahmen beginnt mit der Angabe der Schnittstelle, an die das anzusprechende Gerät 
+angeschlossen ist. Die nun folgende ID-Adresse legt das Kommunikationsmodul des 
+angesprochenen Gerätes fest. 
+Hinweis 
+Beim „Comm-Programm“ muss „^“ durch „=“ und das Trennzeichen 0D (hex) durch 
+„#“ ersetzt werden.
+12 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Übertragungsmedien
+Anders als bei der Kommunikation über die Datenbank bzw. über die serielle Schnittstelle, können 
+aus softwaretechnischen Gründen beim “Comm-Programm” keine Rückmeldungen aufgrund 
+eines Request bzw. Report-Event-Befehls erfolgen. 
+Comm <COM><DestSubID><Cmd> 
+<COM> 1: Empfänger ist an COM1 angeschlossen 
+2: Empfänger ist an COM2 angeschlossen 
+<DestSubID> ID des Empfängers, an die der Befehl geschickt werden soll 
+<Cmd> Befehle siehe Kap. 4, 5 und 6 (Achtung: “^” wird durch “=” ersetzt und 
+Trennzeichen 0D (hex) durch “#” ersetzt) 
+Beispiel: Comm 11=STR 
+In obigem Beispiel wird das an COM1 angeschlossene Gerät in 
+Druckbereitschaft versetzt. 
+2. Dateien übertragen 
+Als Alternative zur Befehlsübertragung wird das „Comm-Programm“ auch zur Übertragung von 
+Dateien verwendet. Bei dieser Anwendung veranlasst der Aufruf von „Comm“ die Kopie der 
+nachfolgend aufgeführten Datei auf das angewählte Gerät. 
+Für diese Anwendung gilt das Format: 
+Comm <SourceSystemID><SourceFileName> <Com1/2><DestFileName> 
+<SourceSystemID> SystemID des Sendegerätes mit der zu kopierenden Datei 
+<SourceFileName> Name und Pfad der zu kopierenden Datei 
+<Com1/2> • 1: Empfänger ist an COM1 angeschlossen 
+• 2: Empfänger ist an COM2 angeschlossen 
+<Dest-FileName> Name und Pfad der kopierten Datei 
+Beispiel: Comm Pc:\cu\logo\dist.mlg 1c:\cu\logo\dist.mlg 
+Von einem PC mit der SystemID P, wird aus dem Verzeichnis 
+c:\cu\logo die Datei „dist.mlg“ an das Gerät, das an Com1 des PCs 
+angeschlossen ist, in das Verzeichnis c:\cu\logo übertragen. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 13
+C-Interface 
+Übertragungsmedien 
+14 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls 
+4 Befehle des Kommunikationsmoduls “Linie” 
+Der Befehlssatz des Kommunikationmoduls „Linie“ beeinflusst über die mit den ID 
+angesprochenen Linien (1 oder 2) den zur Ausführung kommenden Drucktext, sowie die 
+erforderliche Konfiguration des alphaJET C oder betaJET C. 
+Die nachfolgend aufgeführten Befehle, mit den eventuell zugehörigen Parametern, stellen 
+ausschließlich den Paketinhalt dar, der für alle Übertragungsmedien identisch ist. 
+Der Paketinhalt beginnt immer mit dem eigentlichen zweistelligen Befehl, dem zur Kennzeichnung 
+ein „^“ bzw. beim „Comm-Programm“ ein „=“ vorangestellt ist. Den meisten Befehlen folgt ein 
+oder mehrere den Befehlen zugehörige Parameter. 
+Sollten mehrere Parameter folgen, werden diese durch “,” getrennt. Falls ein bestimmter 
+Parameter nicht verändert wird, kann dieser ausgelassen werden. Das dem Parameter 
+zugeordnete Komma wird jedoch benötigt. (z.B. 30,40,,60 → der 3. Parameter wird nicht benötigt). 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 15
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.1 ^RC – Request - Daten anfordern 
+Datenfluss: →
+Mit dem Request-Befehl werden aktuelle Daten vom alphaJET C bzw. betaJET C angefordert. 
+Dabei ist es möglich, die angeforderten Daten durch die Angabe einer vom Sender abweichenden 
+Zieladresse umzuleiten. 
+Für den Paketinhalt gilt folgendes Format: ^RC<SystemID/ID>,<Anforderung> 
+<SystemID/ID> „a...z“ oder „A...Z“ Zieladresse, an die die Rückmeldung gesendet 
+wird. 
+<Anforderung> Durch die Angabe des Befehlkürzels werden die zugehörigen Parameter 
+angefordert. Eine genaue Beschreibung der Parameter finden Sie im 
+jeweiligen Kapitel des Befehls. Über nachfolgende Parameter können 
+Rückmeldungen angefordert werden: 
+• FC: Konfigurationsparameter (siehe Kap. 4.3) 
+• FH: Konfigurationsparameter der Druckköpfe (siehe Kap. 4.4) 
+• SF: Name der geladenen Konfiguration (siehe Kap. 4.6) 
+• ST: Druckstatus (siehe Kap. 4.7) 
+• PL: Name des geladenen Drucktextes (siehe Kap. 4.8) 
+• PT: Druckertyp (siehe Kap. 4.11) 
+• PO: Stand des Encoders bei Druckauslösung (siehe Kap. 4.12) 
+• PC: Produktzählerstand (siehe Kap. 4.17) 
+• DC: Druckfortschritt (siehe Kap. 4.18) 
+• IN: Eingangssignale (siehe Kap. 4.19) 
+• LI: Linienkonfiguration (siehe Kap. 4.23) 
+• VS: Versionen (siehe Kap. 4.24) 
+Beispiel: ^RCPC,PL 
+Der Befehl veranlasst den angesprochenen Drucker, an das Gerät mit 
+der Adresse „PC“, seinen aktuell geladenen Drucktext zu übertragen. 
+16 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+4.2 ^RE – Report Event – Ereignismaske festlegen 
+Datenfluss: →
+Der Report Event-Befehl fordert Rückmeldungen vom alphaJET C bzw. betaJET C bei 
+bestimmten Ereignissen an. 
+Die Rückmeldung erfolgt, nach jeder Änderung, der nachfolgend aufgeführten Ereignisse. Dabei ist 
+es möglich, die angeforderten Daten durch die Angabe einer vom Sender abweichenden 
+Zieladresse umzuleiten. Mit der Zieladresse "00" wird der Report beendet. 
+Der Paketinhalt besteht aus folgendem Format: ^RE<Zieladresse>,<Ereignis> 
+<Zieladresse> • „a...z“ oder „A...Z“ Zieladresse, an die, die Rückmeldung gesendet 
+wird. 
+• 00 beendet den Report, da der Wert 00 keine gültige 
+Rückmeldeadresse darstellt 
+<Ereignis> • S: System Status (Druckbereitschaft) verändert 
+Antwort des Druckers bei eingetretenem Ereignis mit ^ST (siehe 
+Kap. 4.7). 
+• P: Druck ausgelöst 
+Antwort des Druckers bei eingetretenem Ereignis mit ^PP (siehe 
+Kap. 4.10). 
+• C: Produktzähler geändert 
+Antwort des Druckers bei eingetretenem Ereignis mit ^PC (siehe 
+Kap. 4.17). 
+Beispiel 1: ^REPC,P,C 
+Veranlasst die Rückmeldung an die Zieladresse „PC“ von jedem 
+Druckstart sowie jede Änderung des Produktzählers. 
+Beispiel 2: ^RE00,P 
+beendet den Report des Druckstarts. Die im Beispiel 1 angeforderte 
+Änderungen des Produktzählers werden weiterhin übertragen, bis diese 
+mit „^RE00,C“ beendet werden. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 17
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.3 ^FC – Format Konfiguration 
+Datenfluss: ↔
+Mit diesem Befehl werden die Konfigurationsparameter, die das Druckbild beeinflussen, neu 
+gesetzt. Falls ein bestimmter Parameter nicht verändert wird, kann dieser ausgelassen werden. 
+Das dem Parameter zugeordnete Komma wird jedoch benötigt. (z.B. 30,40,,60 → der 3. Parameter 
+wird nicht benötigt). 
+Als Antwort auf den ^RC-Befehl überträgt der Drucker die aktuelle Konfiguration (siehe Kap. 4.1). 
+Es gilt das Format: 
+^FC<Druckposition>,<OffsetAlignment>,<Kopfstehend>,<Bewegungsrichtung>,<Teiler>, 
+<StrokeDichte>,<Encoder>,<EncoderAuflösung>,<N-Factor>,<RichtungInvers>, 
+<PSStartVorwärts>,<Toleranz> 
+<Druckposition> • 0...65535 [mm] Druckverzögerung nach 
+Produktsensorauslösung. 
+<OffsetAlignment> Dieser Parameter muss auf den Wert „B“ eingestellt sein! 
+<Kopfstehend> • B: BottomUp – Der Druck wird um 180º gedreht.
+• N: Normal – Der Druck wird nicht gedreht.
+<Bewegungsrichtung> Bewegungsrichtung der Produkte
+• B: links Æ rechts 
+• N: rechts Æ links 
+<Teiler> • 0...65535 Teilerwert des Encoders.
+<StrokeDichte> • 0...255 – Wert um den die Strokeanzahl des Drucktextes im 
+Drucker erhöht wird. 
+<Encoder> • N: None – Keine Encoder angeschlossen. 
+• 1: 1 Phase – Einphasiger Encoder angeschlossen. 
+• 2: 2 Phasen – Zweiphasiger Encoder angeschlossen. 
+<EncoderAuflösung> • 0...65535 [0,1µm/Takt] Encoder Auflösung.
+<N-Factor> • 0...255 Errechneter Neigungswinkel der Schrift 
+(gilt nur für betaJET C, bei alphaJET C = 0).
+<RichtungInvers> Festlegung der “Vorwärtsrichtung” der Produkte im Drucker 
+• I: Invers 
+• N: Normal 
+<PSStartVorwärts> • E: Enable – Druckauslösung nur in Vorwärtsrichtung. 
+• D: Disable – Druckauslösung in beiden Bewegungsrichtungen. 
+<Toleranz> • Gilt nur für betaJET C: Grad der zulässigen Abweichung im 
+Bezug auf die Schrägstellung des Druckbildes 
+• bei alphaJET C Toleranz = 100 
+18 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+Beispiel: ^FC0,B,N,B,23,0,2,102,0,I,E,100 
+Der Drucker wird wie folgt konfiguriert: 
+• Druckoffset = 0 mm, Druck wird nicht gedreht, Richtung links→
+rechts, Encoderteiler 23, 
+• Stroke Dichte minimal, Encoder 2-phasig, Encoderauflösung = 102, 
+Neigungswinkel der Schrift = 0 (alphaJET C), 
+• Druckauslösung in Vorwärtsrichtung = Invers, Start nur vorwärts, 
+Toleranz = 100 
+4.4 ^FH – FormatHeads – Konfiguration Druckköpfe 
+Datenfluss: ↔
+Der Befehl legt für Mehrkopfanlagen die Anordnung der einzelnen Druckköpfe zueinander fest, um 
+ein passendes Druckbild zu erhalten. Bei Einkopfanlagen müssen alle Werte auf „0“ gestellt sein. 
+Als Antwort auf den Request-Befehl (siehe Kap. 4.1) überträgt ^FH die aktuellen DruckkopfOffsets der angesprochenen Linie. 
+Für den Paketinhalt gilt folgendes Format: 
+^FH<OffsetY>,<OffsetX1>,<OffsetX2>,<OffsetX3>,<OffsetX4> 
+<OffsetY> 0...255 [Pixel] Offset vertikal 
+Für die angewählte Linie wird durch die Pixelangabe die Höhe des 
+Drucktextes bestimmt. Ab dem angegebenen Pixel beginnt der 
+Ausdruck. Die Schrittweite beträgt 8 Pixel. Bei Einliniengeräten sollte 
+dieser Wert “0” sein. 
+<OffsetX1...X4> 0...65535 [mm] Offset horizontal 
+Legt den horizontalen Versatz der Druckköpfe zueinander fest.
+Beispiel: ^FH8,10,0,0,0 
+Dieser Befehl verschiebt den Druckstart um 8 Pixel in vertikaler 
+Richtung, für Druckkopf 1 um 
+10 mm in horizontale Richtung. Für eventuell weitere angeschlossene 
+Druckköpfe findet kein seitlicher Versatz statt. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 19
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.5 ^LF – LoadFormat – Konfiguration laden 
+Datenfluss: Æ
+Der Befehl veranlasst den Drucker, seine vorhandene Konfiguration mit dem Dateinamen 
+<Filename> zu laden. 
+Es gilt das Format: ^LF<Filename> 
+Beispiel: ^LFContinuous 
+Die auf dem Drucker vorhandene Konfiguration mit dem Namen 
+„Continuous“ wird geladen. Ist die gewünschte Konfiguration nicht 
+vorhanden, wird eine aktuelle Konfiguration deaktiviert. 
+4.6 ^SF – SaveFormat – Konfiguration Speichern 
+Datenfluss: ↔
+Der Befehl veranlasst den Drucker, die aktuelle Konfiguration unter dem Dateinamen <Filename> 
+zu speichern. Eine eventuell bereits vorhandene Konfiguration mit gleichem Namen wird dabei 
+überschrieben. 
+Als Antwort auf den Request-Befehl (siehe Kap. 4.1) übermittelt der Drucker den aktuell geladenen 
+Konfigurationsnamen. 
+Es gilt folgendes Format: ^SF<Filename> 
+Beispiel: ^SFContinuous 
+Die aktuelle Konfiguration wird unter dem Namen „Continuous“
+gespeichert. 
+20 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+4.7 ^ST – SystemState – Druckbereitschaft aktivieren / deaktivieren 
+Dieser Befehl veranlasst den Drucker die Druckbereitschaft anzustreben (Pumpen, Tinte), oder 
+das System herunterzufahren (Pumpen, Tinte). Der Drucker geht in den StandBy-Betrieb. 
+Es gilt folgendes Format: 
+^ST<Status> Æ
+<Status> • R: Ready – Druckbereitschaft herstellen 
+• S: Stop – System herunterfahren. Der Drucker befindet sich 
+anschließend im StandBy-Betrieb. 
+Beispiel: ^STS 
+Die Pumpen, Tinte sowie die Druckbereitschaft werden ausgeschaltet, 
+der Drucker geht in den StandBy-Betrieb. 
+Als Antwort aufgrund eines Request bzw. Report-Event - Befehls (siehe Kap. 4.1 und 4.2) 
+überträgt der Befehl ^ST folgende Informationen: 
+^ST<Status>,<Service> ←
+<Status> • R: Bereit - Ein Drucktext ist geladen und zum Druck freigegeben. Es 
+liegen keine Fehlermeldungen des betreffenden Druckkopfes vor. 
+• P: Drucken - Die Linie befindet sich in der Druckausgabe 
+• L: Druckstop – Die Maschine ist bereit, die Druckausgabe wurde 
+allerdings gestoppt 
+• N: Nicht Bereit – Es liegt kein Fehler vor, die Druckbereitschaft 
+wurde allerdings noch nicht hergestellt. 
+• E: Error – Es ist ein Fehler aufgetreten, der die Druckbereitschaft 
+verhindert. 
+<Service> • S: Service erforderlich (Tinte / Lösungsmittel nachfüllen, Druckkopf 
+geöffnet) 
+• O: kein Service nötig 
+Beispiel: ^STP,S 
+Als Antwort auf den Request oder Report-Event-Befehl (siehe Kap. 4.1) 
+meldet der Drucker folgenden Status: 
+• Das System befindet sich im Druck. 
+• Ein Service ist erforderlich (z.B. Tinte / Lösungsmittel nachfüllen) 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 21
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.8 ^PL – PrintLabel – Drucktext laden 
+Datenfluss: ↔
+Dieser Befehl veranlasst den Drucker, den Drucktext mit dem Namen <Filename> zu laden. 
+Als Antwort auf den Request-Befehl (siehe Kap. 4.1) überträgt ^PL den aktuell geladenen 
+Drucktextnamen. 
+Der Paketinhalt besteht aus folgendem Format: ^PL<Filename> 
+Beispiel: ^PLMetronic 
+Der Drucktext mit dem Namen „Metronic“ wird in den aktuellen 
+Druckpuffer geladen. 
+4.9 ^SL – SaveLabel – Drucktext speichern 
+Datenfluss: →
+Dieser Befehl veranlasst den Drucker, den aktuell geladenen Drucktext unter dem Namen 
+<Filename> zu speichern. Ein eventuell bereits vorhandener Drucktext mit gleichem Namen wird 
+dabei überschrieben. 
+Speziell nach der Übertragung eines Datenbefehls (^DE, ^DF, ^DB siehe Kap. 4.13, 4.14, 4.15)
+können somit Drucktexte mit verschiedenen Inhalten auf dem Gerät abgespeichert werden. 
+Für den Paketinhalt gilt folgendes Format: ^SL<Filename> 
+Beispiel: ^SLMetronic 
+Der aktuell geladene Drucktext wird unter dem Namen „Metronic“ 
+gespeichert. 
+22 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+4.10 ^PP – PrintProcess – Druckfreigabe / Drucksperrung 
+Datenfluss: ↔
+Dieser Befehl veranlasst bei dem angesprochenen Drucker die Druckfreigabe bzw. Drucksperrung. 
+Als Antwort auf den Request-Befehl (siehe Kap. 4.1) überträgt ^PP den entsprechenden 
+Druckzustand. 
+Für den Paketinhalt gilt folgendes Format: ^PP<Status> 
+<Status> • G: Druckfreigabe 
+Dieses Kommando entspricht der “Start”-Taste im Print-Menu. Somit 
+startet der Drucker mit dem nächsten Produktsensor-Signal die 
+Druckausgabe. 
+• S: Drucksperrung 
+Ein eventuell bereits begonnener Druck wird zuerst beendet. Der 
+Status des Print-Menu wechselt anschließend auf Druckstop. Der 
+Neustart einer Druckausgabe wird unterbunden. Soll die laufende 
+Druckausgabe abgebrochen werden, muss der Befehl ein zweites 
+mal übertragen werden. 
+Als Antwort auf den Report-Event-Befehl (siehe Kap. 4.2) wird der geänderte Druckstatus 
+zurückgemeldet. Es wird zusätzlich zur Druckfreigabe sowie Drucksperrung ein weiteres Ereignis 
+zurückgemeldet: 
+<Status> • P: Druck ausgelöst – Die Linie befindet sich in der Druckausgabe 
+Für die Rückmeldung des Druckstatus kann als Alternative zu ^PP auch der Befehl ^ST (siehe 
+Kap. 4.7) verwendet werden, der noch weitere Informationen zurückmeldet. 
+Beispiel: ^PPG 
+Der Druckstatus wird auf „Bereit“ gesetzt. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 23
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.11 ^PT – PrinterType 
+Datenfluss: ←
+Der Befehl ^PT wird nur in Verbindung mit einem Request-Befehl (siehe Kap. 4.1) verwendet. Der 
+angesprochene Drucker übermittelt als Antwort verschiedene Systemparameter. 
+Es gilt folgendes Format: 
+^PT<PrinterType>,<Reserviert >,<Reserviert >,<Reserviert >,<HeadCount>,<PixelperHead>, 
+<Slant>,<min. Periode>,<max. N-Faktor>,<Reserviert > 
+<PrinterType> • 65: alphaJET C
+• 66: betaJET C
+<Reserviert> Beliebig 
+<Reserviert> 0 
+<Reserviert> 0 
+<HeadCount> • 0...255 Head Count
+<PixelperHead> • 0...255 Pixel per Head
+<Slant> • 0...255 nur betaJET C, bei alphaJET C = 0
+<min. Periode> • 0...255 [µsec] 1/min.Periode = max. Druckfrequenz
+<max. N-Faktor> • 0...255, nur betaJET C, bei alphaJET C = 0
+<Reserviert> Beliebig 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,PT Æ
+^PT65,1,0,0,1,48,0,100,0,F, d.h. der angeschlossene Drucker ist ein 
+alphaJET C mit einem Kopf im Modus 6g (48Pixel) und einer max. 
+Druckfrequenz von 10kHz. 
+24 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+4.12 ^PO – PS_Position 
+Datenfluss: ←
+Der Befehl ^PO wird nur in Verbindung mit dem Request-Befehl (siehe Kap. 4.1) verwendet. Der 
+angesprochene Drucker übermittelt Informationen über Encoder und Produktsensor (derzeit 
+stehen noch nicht alle Parameter zur Verfügung). 
+Es gilt folgendes Format: 
+^PO<Reserved>,<Reserved>,<Reserved>,<LabelLength>,<DirDetect>,<Reserved>,<Encoder
+Speed> 
+<Reserved> 0 
+<Reserved> 0
+<Reserved> 0
+<LabelLength> • 0...65535 [Pixel]
+<DirDetect> • I: Invert
+• N: Normal
+<Reserved> 0 
+<EncoderSpeed> • 4 Byte [EncClocks/10ms] 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,PO Æ ^PO0,0,0,24,I,0,5
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 25
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.13 ^DE – DataField – Datenfelder setzten 
+Datenfluss: →
+Dieser Befehl überträgt die enthaltenen Strings in die mit der Feldnummer angegebenen 
+Datenfelder des aktuell geladenen Drucktextes. Soll zuvor ein neuer, bereits auf dem Drucker 
+vorhandener Drucktext mit dem Namen <Labelname> geladen werden, erfolgt dies unmittelbar 
+nach dem ^DE-Befehl mit dem Datenteil <PL><Labelname><Trennzeichen>. Damit ist der neue 
+Drucktext geladen, bevor die Daten übernommen werden. 
+Mit der Alternative <SL><Labelname><Trennzeichen> wird nach Übernahme der Daten der 
+Drucktext mit den enthaltenen Daten unter dem Namen <Labelname> auf dem Drucker 
+abgespeichert. 
+Falls kein neues Label geladen oder gespeichert werden soll, kann der Befehlsteil 
+<PL/SL><Labelname><Trennzeichen> weggelassen und sofort mit der Bestimmung von 
+Datenfeldern begonnen werden. Zwischen jedem Datenfeld muss mindestens ein Trennzeichen 
+liegen. 
+Wird der DataField-Befehl zweimal verschickt, werden diese Daten für den nächsten Druck 
+zwischengespeichert. Dadurch ist es möglich, immer einen Datensatz im voraus an den Drucker 
+zu senden (z.B. beim Druckstart). 
+Falls der Befehl die Länge von 512 Bytes überschreitet, muss er in mehrere kleinere Pakete 
+(kleiner 512 Byte) aufgeteilt werden. 
+Hinweis 
+Sobald in einem Drucktext durch den Befehl ^DE Feldtexte gesetzt wurden, wird vor 
+jedem Druck ein neuer ^DE-Befehl erwartet. Steht der ^DE-Befehl am Druckstart 
+noch aus, wird der Druck solange gesperrt, bis ein weiterer ^DE-Befehl die Felder neu 
+besetzt. 
+Durch diese Sicherheitsmaßnahme wird ein mehrfacher Ausdruck bereits gedruckter Felddaten 
+verhindert. 
+Für den Paketinhalt gilt folgendes Format: 
+^DE<PL/SL><Labelname><Trennzeichen><FeldIndex>,<String><Trennzeichen> 
+<FeldIndex>,<String><Trennzeichen>....<FeldIndex>,<String><Trennzeichen> 
+<PL><Labelname> Drucktext mit dem Namen <Labelname> laden (optional) 
+<SL><Labelname> Drucktext mit aktuellen Felddaten unter dem Namen <Labelname> 
+speichern (optional) 
+<Trennzeichen> 0D (hex) oder 13 (dezimal) 
+<FeldIndex> Datenfeldnummer 
+<String> Einzusetzender String (max. 180 Zeichen) 
+26 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+Beispiel: ^DEPLLeertext<Trennzeichen>3,Hallo
+Im Beispiel wird das Textobjekt mit dem Feldindex 3 im Label „Leertext“ mit dem String „Hallo“
+gefüllt. 
+In einem <String> können außer Text-, Zähl- und Zeitvariablen auch Logonamen eingesetzt 
+werden. 
+Beispiel: ^DE1,CE
+Im Beispiel wird in das Logoobjekt mit dem Feldindex 1 im geladenen Label das Logo mit dem 
+Namen „CE“ geladen. 
+Hinweis 
+Die folgenden Formatierungen können nur auf Barcode- und DataMatrix-Objekte 
+angewandt werden. 
+Der <String> muss eine entsprechend verschlüsselte Zähler- bzw. Zeitanweisung enthalten. Für 
+diese Anweisungen gelten folgende Formate: 
+Für den Produktzähler gilt folgendes Format: 
+#<Mode>,<Start>,<Ende>,<Schrittweite>,<Repetition>,<Stellen># 
+<Mode> 0: füllt mit Leerzeichen auf 
+1: Autostop (Druckstop bei Erreichen des Endwertes des Zählers) 
+2: Vornullen (Wert des Zählers mit führenden Nullen auffüllen) 
+3: Autostop und Vornullen 
+<Start> 0... Legt den Startwert des Produktzählers fest 
+<Ende> 0... Legt den Endwert des Produktzählers fest 
+<Schrittweite> 0... Legt den Wert fest, um den der Zähler erhöht wird 
+<Repetition> 0... Legt die Anzahl der Drucke fest, bis der Produktzähler erhöht wird 
+<Stellen> 0... Legt die Stellenanzahl der Numerierung fest. Der Wert muss 
+mindestens der Stellenanzahl des Endwertes entsprechen. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 27
+C-Interface 
+Befehle des Kommunikationsmoduls 
+Das Format für Zeit- und Datumsangaben sind identisch dem Zeit-Format-Fenster des alphaJET 
+C bzw. betaJET C: 
+^<Zeitformate>...<Zeitformate>^ 
+Zeitformat Bedeutung 
+<Jahr> ja: Fügt das aktuelle Jahr in den String ein 
+<Monat> mo: Fügt den aktuellen Monat in den String ein 
+<Tag> ta: Fügt den aktuellen Tag in den String ein 
+<Stunde> st: Fügt die aktuelle Stunde in den String ein 
+<Minute> mi: Fügt die aktuelle Minute in den String ein 
+<Julianisch> jl: Fügt den aktuellen Tag des Julianischen Kalenders in den String ein
+<Monatsname> mnn: Fügt den aktuellen Monatsnamen in den String ein 
+<Kalenderwoche> kw: Fügt die aktuelle Kalenderwoche in den String ein
+<Wochentagname> wtn: Fügt den aktuellen Wochentagnamen ein 
+<Wochentagzahl> tz: Fügt die aktuelle Wochentagszahl ein 
+<Quartalszahl> qu: Fügt die aktuelle Quartalszahl ein 
+<Alpha-Jahr> aj: Ausgabe des Alpha-Jahres. Die Jahreszahl wird durch A-Z kodiert 
+<Alpha-Stunde> as: Ausgabe der Alpha-Stunde. 0 – 23 Uhr wird als A-X dargestellt 
+<Verfallsdatum> <0>...<xxx>: addiert die eingegebene Zahl zum aktuellen Datum 
+Beispiel: ^DE1,^stmi^#3,0,99,1,1,2# 
+Der Befehl setzt in den Barcode mit dem Feldindex 1 den String " 
+105218" (mit der für dieses Beispiel angenommener Systemzeit 10:52 
+und Produktzähler 18) ein. 
+Das Nummernobjekt wird folgendermaßen konfiguriert: 
+Es werden Drucke von 0 bis 99 mit anschließendem Autostop 
+durchgeführt wobei nach jedem Druck der Produktzähler um 1 erhöht 
+wird. 
+Hinweis 
+Die Stellenzahl des Zeit- bzw. Nummernobjektes muss der voreingestellten Stellenzahl 
+des Barcodes bzw. DataMatrix-Objektes entsprechen. Es dürfen nur für das gewählte 
+Objekt zulässige Zeichen verwendet werden (z.B. 2/5interl → nur Zahlen). 
+28 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+4.14 ^DF – DataField2 – Datenfelder mit fixer Feldlänge setzen 
+Datenfluss: →
+Dieser Befehl unterscheidet sich vom ^DE-Befehl lediglich bezüglich der String-Übernahme. 
+Überträgt man mit dem ^DF-Befehl einen String einer anderen Länge als das zugehörige 
+Datenfeld, wird der String abgeschnitten bzw. mit Leerzeichen aufgefüllt. Es gelten die gleichen 
+Formatvorgaben wie beim ^DE-Befehl. 
+4.15 ^DB – DataField3 – Mehrfach druckbare Datenfelder setzen 
+Datenfluss: →
+Dieser Befehl unterscheidet sich nur durch zwei Ausnahmen vom ^DE-Befehl: 
+• Der ^DB-Befehl muss nicht vor jedem Druck erfolgen. Der letzte Datenfeldinhalt wird solange 
+gedruckt, bis die Datenfelder durch einen neuen DB-Befehl erneut gesetzt werden. 
+• Werden mehrere DB-Befehle vor einem Druck übertragen, so werden die 
+Datenfeldinformationen nicht zwischengespeichert, sondern sofort in die Datenfelder 
+übertragen. 
+Es gelten die gleichen Formatvorgaben wie beim ^DE-Befehl. 
+4.16 ^DX – Datenfelder löschen 
+Datenfluss: →
+Dieser Befehl löscht sowohl alle Inhalte der aktuellen Datenfelder, als auch eventuell 
+zwischengespeicherte Datenfeldtexte. 
+Es gilt folgendes Format: ^DX
+Zusätzliche Parameter sind nicht erforderlich. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 29
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.17 ^PC – ProdCounter – Produktzähler 
+Datenfluss: ↔
+Der Befehl setzt den Produktzähler des alphaJET C bzw. betaJET C auf den übertragenen Wert. 
+Als Antwort auf einen Request oder Report-Event -Befehl überträgt ^PC den aktuellen 
+Produktzählerstand. 
+Es gilt das Format: ^PC<ProdCounter> 
+<ProdCounter> 0 ...... 1999999999 
+Beispiel: ^PC200123 
+Der Produktzähler wird auf den Wert 200123 gesetzt. 
+4.18 ^DC – Druckfortschritt 
+Datenfluss: ←
+Der Befehl ^DC wird nur in Verbindung mit einem Request-Befehl (siehe Kap. 4.1) verwendet. Der 
+angesprochenen Drucker übermittelt als Antwort seinen aktuellen Druckfortschritt (Anzahl 
+gedruckter Strokes). 
+Folgendes Format ist zu beachten: 
+^DC<gedruckte Strokes>,<Gesamtzahl Strokes> 
+<gedruckte Strokes> 0 ....65535 aktueller Zählerstand (gedruckte Textlänge) 
+<Gesamtzahl Strokes> 0 ....65535 gesamte Drucktextlänge 
+Beispiel: ^DC13500,20000 
+Der Drucker sendet als Antwort auf den Request-Befehl (siehe Kap. 
+4.1) seinen aktuellen Zähler von „13500“ bei einer Gesamtlänge von 
+„20000“. 
+30 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+4.19 ^IN – Inputs – Eingangssignale 
+Datenfluss: ←
+Der Befehl ^IN wird nur in Verbindung mit einem Request-Befehl (siehe Kap. 4.1) verwendet. Der 
+angesprochene Drucker übermittelt als Antwort den aktuellen Zustand seiner optionalen Eingänge 
+sowie des Produktsensors. 
+Es gilt das Format: ^IN<Dezimalzahl> 
+<Dezimalzahl> 0 ....255 Dezimalzahl, die je nach Bitwertigkeit entschlüsselt wird. Ist die 
+Bitstelle High ist der entsprechende Eingang aktiviert, ansonsten 
+deaktiviert. 
+Wird die Dezimalzahl in eine 1Byte Variable umgewandelt gilt: 
+Bit0: OptoIN 0 
+Bit1: OptoIN 1 
+Bit2: OptoIN 2 
+Bit3: OptoIN 3 
+Bit4: OptoIN 4 
+Bit5: OptoIN 5 
+Bit6: OptoIN 6 
+Bit7: Produktsensor 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,IN Æ ^IN9
+Als Antwort auf den Request-Befehl sendet der Drucker den angenommenen Dezimalwert 9. Die 
+umgewandelte 1-Byte Variable entspricht 00001001. 
+Damit ist der Eingang 0 sowie der Eingang 3 aktiviert, alle anderen Eingänge sind derzeit nicht 
+aktiviert. 
+4.20 ^SP – Programm auswählen 
+Datenfluss: ↔
+Mit diesem Befehl lässt sich das benötigte MPL-Programm auswählen. 
+Der Drucker sendet als Antwort auf den Request-Befehl (siehe Kap. 4.1) den Namen des aktuell 
+eingestellten MPL-Programms. 
+Folgendes Format ist zu beachten: ^SP<MPL Name> 
+Beispiel: ^SPExt_Text 
+In diesem Beispiel wird das MPL-Programm „Ext_Text“ ausgewählt. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 31
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.21 ^DO – Delete Object – Objekt löschen 
+Datenfluss: →
+Dieser Befehl löscht alle Objekte im gewählten Label. Man erhält einen leeren Text. Weitere 
+Parameter sind nicht nötig. 
+4.22 ^CO – Create Object – Neues Objekt anlegen 
+Datenfluss: 
+→
+Mit diesem Befehl kann in einem Label ein neues Objekt angelegt werden. 
+Für Texte, Logos, Zeit, Nummern und DataMatrix ab CU-Version 7.17 gilt dieses Format: 
+^CO<TypID>,<OffsetX>,<OffsetY>,<FontID>,<StrokeDichte>,<Zeichenbreite>,<SortFlag>, 
+ <FeldIndex>,<LabelText><Trennzeichen> 
+Für Barcodes ab CU-Version 7.17 gilt dieses Format: 
+^CO<TypID>,<OffsetX>,<OffsetY>,<FontID>,<StrokeDichte>,<Zeichenbreite>,<SortFlag>, 
+<FeldIndex>,<Modulhöhe>,<BarcodeFormatFlags>,<Verhältnis>,<RuhezoneLinks>, 
+<RuhezoneRechts>,<LabelText><Trennzeichen> 
+<TypID> 1: Text 
+2: Logo 
+3: Zeit 
+4: Nummer 
+7: DataMatrix 
+17: 2/5i 
+19: Code 39 
+20: Pharma 
+23: EAN-8 
+24: EAN-13 
+25: UPC-8 
+26: UPC-12 
+27: EAN128C 
+28: EXT-2 
+29: EXT-5 
+30: Codabar 
+31: Code128 
+32: EAN128 
+<OffsetX> -1 hängt den Text am zuletzt gedruckten Text an 
+0...32767 X-Koordinate des Objekts 
+<OffsetY> 0...32767 Y-Koordinate des Objekts 
+ Angabe des verwendeten Fonts (Format wie im Text-FormatFenster, z.B. a7x5) 
+ Für Barcode-Objekte: immer Font „m7x5“ angeben. 
+ Für DataMatrix-Objekte wird das Format angegeben: 
+<FontID> 
+0: Autoformat 
+1: 10x10 
+2: 12x12 
+3: 14x14 
+4: 16x16 
+5: 18x18 
+6: 20x20 
+7: 22x22 
+8: 24x24 
+9: 26x26 
+25: 08x18 
+26: 08x32 
+27: 12x26 
+28: 12x36 
+29: 16x36 
+30: 16x48 
+<StrokeDichte> 1...255: Faktor, um den die Strokezahl des Druckobjektes erhöht wird. 
+32 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+<Zeichenbreite> 1...255: Breite eines Zeichens in Strokes. 
+<SortFlag> 0: Keine zusätzliche Formatierung. 
+1: Spiegelung vertikal (entspricht „Rückwärts“) 
+2: Spiegelung horizontal 
+4: Negativ 
+16: Proportional 
+64: DoubleSpace 
+Durch Addition können mehrere Konfigurationen ausgewählt 
+werden. Zusätzlich muss zum Endwert 32 addiert werden! 
+Bsp.: Für Formatierung „Kopfstehend“ ergibt sich die Zahl 35 (1+2+32). 
+<FeldIndex> Feldindex 
+<Modulhöhe> Nur für Barcode-Objekte! 
+ Modulhöhe des Barcodes 
+Nur für Barcode-Objekte! 
+Klartext-Position: 
+0: ohne Klartext 
+1: Klartext unten 
+3: Klartext oben 
+5: Klartext links 
+7: Klartext rechts 
+Prüfziffer: 
+0: ohne Prüfziffer 
+16: Prüfziffer Mod10 
+32: Prüfziffer Mod11 
+<BarcodeFormatFlags> 
+Die Klartext-Werte und die Prüfziffer-Werte müssen addiert werden. 
+Die Summe entspricht den BarcodeFormatFlags. 
+<Verhältnis> Nur für Barcode-Objekte! 
+2: Verhältnis 1:2 
+3: Verhältnis 1:3 
+<Ruhezone Links> Nur für Barcode-Objekte! 
+<Ruhezone Rechts> Nur für Barcode-Objekte! 
+<LabelText> Gewünschter Text oder Logoname. 
+<Trennzeichen> 0D(hex) oder 13 (dezimal). 
+Beispiel: Text „Hallo“, kopfstehend, FeldIndex 99: 
+^CO1,0,0,a7x5,1,1,35,99,Hallo 
+Verfallsdatum „Tag.Monat.Jahr“ mit 30 Tagen: 
+^CO3,0,0,a7x5,1,1,32,0,ta.mo.ja<30> 
+Barcode EAN-8 mit Prüfziffergenerierung, Modulhöhe 24, 
+Klartext unten, Verhältnis 1:2:, Ruhezone 10: 
+^CO23,0,0,m7x5,1,1,32,0,24,17,2,10,10,12345678 
+Datamatrix, Format 14x14, X-Position 40:
+^CO7,40,0,3,1,1,32,0,123456 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 33
+C-Interface 
+Befehle des Kommunikationsmoduls 
+4.23 ^LI – Line – Linienkonfiguration übertragen 
+Datenfluss: ←
+Dieser Befehl wird nur als Antwort auf den entsprechenden Request-Befehl (siehe Kap. 5.1) 
+verwendet. Der angesprochene Drucker übermittelt als Antwort die Linienkonfiguration. 
+Über einen ^LI-Befehl an alle (DestSYSID = '!') wird jedes Gerät mit seiner LI an den Sender 
+antworten. 
+Es gilt folgendes Format: 
+^LI<Name>,<SystemID>,<Device>,<Linenumber>,<Reserved> 
+<Name> [...] Name der Linie 
+<SystemID> „a...z“ und „A...Z“ Zieladresse, an die der Befehl gesendet wird 
+<Device> • A: alphaJet C 
+• A: Alphaslave 
+• B: betaJET C
+• P: PC-Programm (keine Linien konfiguriert) 
+<Linenumber> • 1: Eine Linie konfiguriert 
+• 2: Zwei Linien konfiguriert
+<Reserved> 0 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,LI Æ^LI Alpha,A,A,2,0
+4.24 ^VS – Versions - Versionen abfragen 
+Datenfluss: ←
+Dieser Befehl wird nur als Antwort auf den entsprechenden Request-Befehl (siehe Kap. 4.1) 
+verwendet. Der angesprochene Drucker übermittelt als Antwort die Versionen. 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,VS Æ
+^VSS07.05
+C01.09
+L01.11
+M01.25
+F01.06
+D02.09
+34 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+5 Befehle des Kommunikationsmoduls „Disk/System” 
+Die Befehle für das Kommunikationsmodul „Disk/System“ beeinflussen über die mit der ID „D“
+angesprochene Disk/System die Verzeichnis- bzw. Dateistruktur des Druckers. Außerdem können 
+Systemeigenschaften verändert bzw. abgerufen werden. 
+Der Paketinhalt besteht, wie bei den linienbezogenen Befehlen, aus dem eigentlichen Befehl sowie 
+eventuell dem Befehl zugehörigen Parameter. 
+5.1 ^RC – Request – Daten anfordern 
+Datenfluss: →
+Mit dem Request-Befehl werden aktuelle Daten vom alphaJET C bzw. betaJET C angefordert. 
+Dabei ist es möglich, die angeforderten Daten durch Angabe einer vom Sender abweichenden 
+Zieladresse umzuleiten. 
+Für den Paketinhalt gilt folgendes Format: 
+^RC<Zieladresse>,<Anforderung> 
+<Zieladresse> „a...z“ und „A...Z“ Zieladresse, an die die Rückmeldung gesendet wird. 
+<Anforderung> Durch die Angabe des Befehlkürzels werden die zugehörigen Parameter 
+angefordert. Eine genaue Beschreibung der Parameter finden Sie im 
+jeweiligen Kapitel des Befehls. Über nachfolgende Befehle werden 
+folgende im Drucker aktuellen Parameter angefordert: 
+• ID: ID-Adresse (siehe Kap. 5.13) 
+• SI: Systemkonfiguration (siehe Kap. 5.17) 
+Beispiel: ^RCPC,SI 
+Der Befehl veranlasst den angesprochenen Drucker an das Gerät mit 
+der Adresse „PC“ seine Systemkonfiguration zu übertragen. 
+Hinweis 
+Die Linienkonfiguration kann mit einer festen Zieladresse nur einmal abgefragt werden 
+(z.B. !D (an alle) beim Hochfahren um sich im Netz zu melden). 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 35
+C-Interface 
+Befehle des Kommunikationsmoduls 
+5.2 ^DR – Dir Request – Inhaltsverzeichnis abfragen 
+Datenfluss: →
+Der Befehl fragt den Inhalt des angegebenen Verzeichnisses beim Empfänger ab. Als Antwort 
+sendet der Empfänger mit dem Befehl ^DI die entsprechende Information zurück. 
+Für die Anfrage gilt das Format: ^DR<PathName> 
+<Pathname> Pfad des abzufragenden Verzeichnisses 
+Beispiel: ^DRc:\cu\logo 
+Veranlasst die Übertragung der Inhalte des Verzeichnisses „logo“ durch 
+„^DI“
+5.3 ^DI – Dir Info – Inhaltsverzeichnis übertragen 
+Datenfluss: ←
+Der Befehl überträgt aufgrund des ^DR-Befehls den Inhalt des angefragten Verzeichnisses. 
+Verzeichnisse und Dateien werden zur Unterscheidung durch „;“ getrennt. 
+Es gilt folgendes Format: 
+^DI <OfPath>00(hex)<Dir>,<Dir>,....<Dir>;<File>,<File>,.....<File>;00(hex) 
+<OfPath> Angefragtes Verzeichnis 
+<Dir> Enthaltenes Unterverzeichnis 
+<File> Enthaltene Datei 
+00 (hex) Start und Ende-Signal des Inhaltsverzeichnisses 
+Beispiel: ^DIlogo\0,Dir1,Dir2;File1;\0 
+Sendet den Inhalt des Verzeichnisses „logo“. Der Inhalt besteht aus 
+den Unterverzeichnissen „Dir1“ und „Dir2“ sowie der Datei „File1“. 
+36 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+5.4 ^DM – Dir Make – Verzeichnis anlegen 
+Datenfluss: →
+Der Befehl ^DM erstellt ein neues Verzeichnis. 
+Es gilt folgendes Format: ^DM<PathName> 
+<PathName> Name und Pfad des anzulegenden Verzeichnisses 
+Beispiel: ^DMNeu 
+Erstellt ein Verzeichnis mit dem Namen „Neu“. Da im Parameter keine 
+Laufwerksangabe erfolgt ist, wird das Verzeichnis „Neu“ automatisch in 
+der vorhandenen „Rootpath“ der Empfangsadresse angelegt. 
+(Normalerweise c:\cu) 
+5.5 ^DD – Dir Delete – Verzeichnis löschen 
+Datenfluss: →
+Der Befehl ^DD löscht ein vorhandenes Verzeichnis. 
+Es gilt folgendes Format: ^DD<PathName> 
+<PathName> Name und Pfad des anzulegenden Verzeichnisses 
+Beispiel: ^DDc:\cu\font\Alt 
+Löscht das Verzeichnis mit dem Namen „Alt“ aus dem Pfad c:\cu\font 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 37
+C-Interface 
+Befehle des Kommunikationsmoduls 
+5.6 ^FD – FileDelete – Datei löschen 
+Datenfluss: →
+Der Befehl ^FD löscht die angegebene Datei aus einem vorhandenen Verzeichnis. 
+Es gilt das Format: ^FD<FileName> 
+<Filename> Name und Pfad der zu löschenden Datei 
+Beispiel: ^FDc:\cu\font\test3.mlg 
+Löscht die Datei mit dem Namen „test3.mlg“ aus dem Verzeichnis 
+c:\cu\logo 
+5.7 ^FR – File Request – Einleiten einer Kopie 
+Datenfluss: →
+Der Befehl ^FR leitet die Kopie einer vorhandenen Datei ein. Nach Beenden des Filetransfers wird 
+die Meldung ^FX an den Initiator von ^FR ausgegeben. 
+Folgendes Format ist zu beachten: 
+^FR<SourceSystemID><SourceFileName>,<DestSystemID><DestFileName> 
+<SourceSystemID> SystemID des Gerätes mit der zu kopierenden Datei 
+<SourceFileName> Name u. evtl. Pfad der zu kopierenden Datei 
+<DestSystemID> SystemID des Gerätes der kopierten Datei 
+<DestFileName> Name und evtl. Pfad der kopierten Datei 
+Beispiel: ^FRAc:\cu\logo\test3.mlg,Bc:\cu\test4.mlg 
+Startet die Kopie der Datei „test3“ des Verzeichnisses c:\cu\logo vom 
+Gerät mit der SystemID „A“ zum Gerät mit der SystemID „B“. 
+Die neu erstellte Datei wird im Verzeichnis c:\cu\ unter dem Namen 
+„test4“ gespeichert. 
+38 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+5.8 ^FT – FileTransfer – Datei kopieren 
+Datenfluss: →
+Der Befehl führt den mit ^FR eingeleiteten Filetransfer durch. Die maximale Größe eines 
+Filetransfers beträgt 32000 Byte. Ist der File > 32000 Byte, müssen mehrere ^FT-Befehle mit 
+entsprechend kleineren Filegrößen (Offsets) durchgeführt werden. 
+Der Blockcheck wird als Summe über alle Binärdaten (inklusive ftime) modulo 256 übergeben. 
+Der Empfänger überprüft den Blockcheck und sichert bei Übereinstimmung den Filebereich. Als 
+Antwort sendet er den Befehl ^FB an den Sender zurück. 
+Die Binärdaten sind an den 0 terminierten ASCII-String angehängt und bestehen aus dem struct 
+ftime und den Daten des Files. 
+Folgendes Format ist zu beachten: 
+^FT<DestSystemID><DestFileName>,Offset,PaketSize,Blockcheck\0x00 <Binary-Data: 
+ftime,File><BinaryDataFile> 
+<DestSystemID> 
+<DestFileName> 
+Offset 
+Paketsize 
+Blockcheck 
+<Binary-Data: 
+ftime,File> 
+Das struct ftime besteht aus einem unsigned long mit folgender 
+Bitaufteilung: 
+0 – 4 Seconds/2 
+5 – 10 Minutes 
+11 - 15 Hours 
+16 – 20 Day 
+21 – 24 Month 
+25 - 31 Year-1980 
+<BinaryDataFile> 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 39
+C-Interface 
+Befehle des Kommunikationsmoduls 
+5.9 ^FB – File Blockcheck – Überprüfung des Filetransfer 
+Datenfluss: ←
+Der Befehl überträgt den errechneten Blockcheck als Antwort auf den mit ^FT durchgeführten 
+FileTransfer. Stimmt dieser nicht mit dem Sendeblockcheck überein, wird der aktuelle ^FT
+nochmals wiederholt. 
+Für den Befehl gilt folgendes Format: ^FB<BlockCheck> 
+<Blockcheck> Errechneter Wert des Empfängers 
+5.10 ^FX – Filetransfer Done – Rückmeldung über erfolgreichen Filetransfer 
+Datenfluss: ←
+Mit ^FX erfolgt die Meldung über die Beendigung eines Filetransfers an den Initiator von ^FR.
+Dieser Befehl ist nur notwendig, wenn der Befehl ^FR von einem CU-Programm begonnen wurde. 
+Es gilt das Format: ^FX 
+Zusätzliche Parameter sind nicht erforderlich. 
+5.11 ^RB – Request Backup – Sicherungskopien durchführen 
+Datenfluss: →
+Der Befehl veranlasst die Control Unit, alle Text- und Konfigurationsdateien auf Flashdisk zu 
+sichern. Im Falle eines Batteriefehlers wird dieses Backup automatisch geladen. Dieser Befehl 
+entspricht der Backup-Funktion des CU-Programms. 
+Es gilt das Format: ^RB 
+Zusätzliche Parameter sind nicht erforderlich. 
+40 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+5.12 ^RR – Request Restore – Sicherungskopien laden 
+Datenfluss: →
+Veranlasst die Control Unit, die Text- und Konfigurationsdateien des letzten Backup`s in den 
+batteriegepufferten Speicher zu laden. Dieser Befehl entspricht der Restore-Funktion des CUProgramms. Bestehende Files werden überschrieben. 
+Es gilt das Format: ^RR 
+Zusätzliche Parameter sind nicht erforderlich. 
+5.13 ^ID– ID-Adressen übertragen 
+Datenfluss: ←
+Dieser Befehl wird nur in Verbindung mit dem Request-Befehl (siehe Kap. 5.1) verwendet. Der 
+angesprochene Drucker übermittelt als Antwort seine komplette ID – Liste. 
+Es gilt das Format: ^ID<SysID>:<IDList> - mit den möglichen ID-Adressen: 
+<SysID> SystemID des angefragten Gerätes 
+<IDList> • 1 Linie 1 
+• 2: Linie 2 
+• P: Printer 1 
+• Q: Printer 2 
+• E: Error Handler 
+• S: Signal Manager Linie 1 
+• T: Signal Manager Linie 2 
+• D: Disk/System 
+• W: MPL – Fensterbereich 
+• L: Fensterbereich Linie 1 
+• M: Fensterbereich Linie 2 
+• A: alphaJET C Fensterbereich 
+• B: betaJET C Fensterbereich 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,ID Æ ^IDA:1PESDWLMAB
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 41
+C-Interface 
+Befehle des Kommunikationsmoduls 
+5.14 ^LI – Line – Linienkonfiguration übertragen 
+Datenfluss: ←
+Dieser Befehl wird nur als Antwort auf den entsprechenden Request-Befehl (siehe Kap. 5.1) 
+verwendet. Der angesprochene Drucker übermittelt als Antwort die Linienkonfiguration. 
+Über einen ^LI-Befehl an alle (DestSYSID = '!') wird jedes Gerät mit seiner LI an den Sender 
+antworten. 
+Es gilt folgendes Format: 
+^LI<Name>,<SystemID>,<Device>,<Linenumber>,<Reserved> 
+<Name> [...] Name der Linie 
+<SystemID> „a...z“ und „A...Z“ Zieladresse, an die der Befehl gesendet wird 
+<Device> • A: alphaJet C 
+• A: Alphaslave 
+• B: betaJET C
+• P: PC-Programm (keine Linien konfiguriert) 
+<Linenumber> • 1: Eine Linie konfiguriert 
+• 2: Zwei Linien konfiguriert
+<Reserved> 0 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,LI Æ^LI Alpha,A,A,2,0
+5.15 ^TD– TimeDate – Uhrzeit und Datum setzen 
+Datenfluss: →
+Mit diesem Befehl wird die Uhrzeit und das Datum neu gesetzt. 
+Folgendes Format ist zu beachten: 
+^TD <year>,<month>,<day>,<hour>,<min>
+<year> Aktuelles Jahr setzen (muss vierstellig angegeben werden) 
+<month> Aktuellen Monat setzen 
+<day> Aktuellen Tag setzen 
+<hour> Aktuelle Stunde setzen 
+<min> Aktuelle Minute setzen 
+42 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+Beispiel: ^TD,,,14,45 
+Die aktuelle Uhrzeit wird auf 14.45 Uhr gesetzt. Jahreszahl, Monat sowie 
+Tag bleiben unverändert. 
+5.16 ^SC – System Configuration 
+Datenfluss: →
+Mit diesem Befehl kann der gesamte Systembereich des Gerätes neu bestimmt werden. 
+Neben der SystemID können die beiden seriellen Schnittstellen, die Pfade für das System, sowie 
+die Parameter für beide Linien verändert werden. 
+Folgendes Format muss beachtet werden: 
+^SC<SystemID>, 
+<COM1Active>,<COM1CU>,<COM1Baud>,<COM1Parity>, 
+<COM2Active>,<COM2CU>,<COM2Baud>,<COM2Parity>, 
+<FontPath>,<LogoPath>,<LabelPath>, 
+<Line1Name>,<Line1MS>,<Line1CommonServ>,<Line1Device>, 
+<Line2Name>,<Line2MS>,<Line2CommonServ>,<Line2Device> 
+<SystemID> Festlegen der SystemID 
+<COM1/2Active> • A: Com 1/2 aktiv
+• I: Com 1/2 inaktiv 
+<COM1/2CU> • C: Control Unit System 
+• E: Externes Steuersystem 
+<COM1/2Baud> 4800...115200: Baudrate 
+<COM1/2Parity> Parität: 
+• N: Keine 
+• O: Ungerade 
+• E: Gerade 
+• M: Mark 
+• S: Space 
+<FontPath> Legt den Pfad für das Verzeichnis „Font“ fest 
+<LogoPath> Legt den Pfad für das Verzeichnis „Logo“ fest 
+<LabelPath> Legt den Pfad für das Verzeichnis „Text“ fest 
+<Line1/2Name> Name der Linie 1 bzw. Linie 2 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 43
+C-Interface 
+Befehle des Kommunikationsmoduls 
+<Line1/2MS> • N: Keine MasterSlave Verknüpfung 
+• M: Diese Linie (1) ist Master 
+• S: Diese Linie (2) ist Slave 
+<Line1/2Common
+Serv> 
+• C: Gemeinsames Servicefenster für beide Linien 
+• S: Getrennte Servicefenster für jede Linie 
+<Line1/2Device> • 0: An dieser Linie ist kein Drucker angeschlossen 
+• 65: An dieser Linie ist ein alphaJET C angeschlossen 
+• 66: An dieser Linie ist ein betaJET C angeschlossen
+• 97: Diese Linie arbeitet als alphaJET-Slave (Tintensystem wird über 
+Master gesteuert) 
+Beispiel: ^SCA,A,C,38400,E,A,C,38400,E,C,c:\cu\font,c:\cu\logo,x:,Alpha,N,S,
+65,,N,S,0
+5.17 ^SI – Systeminformation 
+Datenfluss: ←
+Dieser Befehl wird nur in Verbindung mit dem entsprechenden Request-Befehl (siehe Kap. 5.1) 
+verwendet. Der angesprochene Drucker übermittelt als Antwort die auf der Maschine konfigurierten 
+Systemparameter. 
+Das Format, sowie die entsprechenden Parameter, sind identisch mit dem Befehl ^SC (SystemConfiguration) aus Kap. 5.16. 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,SI Æ
+^SIA,A,C,38400,E,A,C,38400,E,C,c:\cu\font,c:\cu\logo,x:,Alpha,N,S,6
+5,,N,S,0
+44 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+5.18 ^AC – Auto-Configuration 
+Datenfluss: →
+Dieser Befehl legt fest, ob beim Neustart die extern angeschlossenen Geräte (Drucker, PCs) neu 
+ermittelt werden oder die gespeicherte Konfiguration geladen wird. 
+Es gilt folgendes Format: ^AC<OnOff> 
+<OnOff> • Y: Die Autokonfiguration wird eingeschaltet, d.h. beim Starten 
+werden die extern angeschlossenen Geräte neu ermittelt. 
+• N: Die Autokonfiguration wird ausgeschaltet, d.h. die derzeit 
+erkannten externen Linien werden gespeichert und beim Start 
+entsprechend übernommen. 
+Beispiel: ^ACN 
+Die Autokonfiguration wird ausgeschaltet. Beim nächsten Neustart 
+werden somit die derzeit erkannten externen Linien als aktuelle 
+Linienkonfiguration übernommen. Die Control Unit versucht nicht, die 
+extern angeschlossenen Linien neu zu übermitteln. 
+5.19 ^BO – Boot - System Booten 
+Datenfluss: →
+Nach der Übertragung des Befehls ^BO startet die Control-Unit das Systemprogramm neu. 
+Zusätzliche Parameter werden nicht benötigt. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 45
+C-Interface 
+Befehle des Kommunikationsmoduls 
+5.20 ^RF – Register File 
+Datenfluss: →
+Mit diesem Befehl kann ein Font oder ein Logo nachträglich registriert und damit verfügbar 
+gemacht werden. Standardmäßig werden alle Fonts im Verzeichnis c:\cu\font und alle Logos im 
+Verzeichnis c:\cu\logo beim Systemstart registriert. Durch diesen Befehl können Dateien die erst 
+danach übertragen wurden, oder sich in einem anderen Verzeichnis befinden registriert werden. 
+Es gilt folgendes Format: ^RF<FileName> 
+<FileName> • <path>\Name.MFT: Der angegebene Zeichensatz wird für das 
+Betriebssystem registriert, sofern er existiert. 
+• <path>\Name.MLG: Das angegebene Logo wird für das 
+Betriebssystem registriert, sofern es existiert. 
+Beispiel: ^RFx:\test.mlg 
+Das Logo test.mlg, das sich im batteriegepufferten RAM-Bereich (x:\) 
+befindet, wird für das System verfügbar gemacht. 
+46 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Kommunikationsmoduls
+6 Befehle des Kommunikationsmoduls “ErrorHandler” 
+Über die SubID „E“ kann der Fehlerzustand des Druckers abgefragt werden. 
+6.1 ^RC – Request – Daten anfordern 
+Datenfluss: →
+Mit dem Request-Befehl werden aktuelle Daten vom alphaJET C bzw. betaJET C angefordert. 
+Dabei ist es möglich, die angeforderten Daten durch Angabe einer vom Sender abweichenden 
+Zieladresse umzuleiten. 
+Für den Paketinhalt gilt folgendes Format: ^RC<Zieladresse>,<Anforderung> 
+<Zieladresse> „a...z“ und „A...Z“ Zieladresse, an die, die Rückmeldung gesendet wird 
+<Anforderung> Durch die Angabe des Befehlkürzels werden die zugehörigen Parameter 
+angefordert. Eine genaue Beschreibung der Parameter finden Sie im 
+jeweiligen Kapitel des Befehls. 
+Über nachfolgende Befehle werden folgende im Drucker aktuellen 
+Parameter angefordert: 
+• EL: Fehlerliste übertragen (siehe Kap. 6.3) 
+• ER: Fehlerrequest (siehe Kap. 6.4) 
+6.2 ^CL – ClearErrorList - Fehlerliste löschen 
+Datenfluss: →
+Nach der Übertragung des Befehls ^CL wird die komplette Fehlerliste gelöscht. Zusätzliche 
+Parameter werden nicht benötigt. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 47
+C-Interface 
+Befehle des Kommunikationsmoduls 
+6.3 ^EL – ErrorList - Fehlerliste übertragen 
+Datenfluss: ←
+Dieser Befehl wird nur als Antwort auf den entsprechenden Request-Befehl (siehe Kap. 6.1) 
+verwendet. Der angesprochene Drucker übermittelt als Antwort die Fehlerliste. Weitere Parameter 
+sind nicht erforderlich. 
+Hinweis 
+Die Fehlerliste wird binär codiert übertragen. 
+6.4 ^ER – ErrorRequest - Fehlerrequest 
+Datenfluss: ←
+Dieser Befehl wird nur als Antwort auf den entsprechenden Request-Befehl (siehe Kap. 6.1) 
+verwendet. Der angesprochene Drucker übermittelt als Antwort die aktuell anstehenden und noch 
+nicht abgefragten Fehler in folgendem Format: 
+^ER<ErrorCode>,<Linie>,<KopfNr>,<Typ> 
+<ErrorCode> Fehlernummer wie in der Bedienungsanleitung beschrieben 
+<Linie> 1: Linie 1 
+2: Linie 2 
+<KopfNr> 1: Kopf 1 
+2: Kopf 2 
+3: Kopf 3 
+4: Kopf 4 
+<Typ> 1: Warnung 
+2: Prozessfehler 
+3: Fataler Fehler 
+4: Info 
+Beispiel: Rückmeldung auf Request-Befehl ^RCPC,ER Æ ^ER260,2,2,2
+48 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Signal-Managers
+7 Befehle des Signal-Managers 
+Über die SubID „S“ (Linie 1) bzw. „T“ (Linie 2) kann mit dem Signal-Programm des Druckers 
+kommuniziert werden. 
+Die hier aufgeführten Befehle beziehen sich nur auf die Option „Extended“ der folgenden 
+Programme Standard, TextList und ExtText des Druckers. 
+7.1 ^CS3 – ProgPar-Fenstereinstellungen 
+7.1.1 Übertragungsparameter 
+• Signal 3 (^CS3) 
+• Die Übertragungsparameter müssen durch ein Komma getrennt werden. 
+Option Extended (bis MPL Version 1.16) 
+Syntax: ^CS3,<Druckmode>,<Druckmarkenteiler>,<Distanz> 
+Option Extended und WSM (bis MPL Version 1.16) 
+Syntax: ^CS3,<Druckmode>,<Druckmarkenteiler>,<Distanz>,<WSM>, 
+<FTC>,<OPS> 
+Option Extended (ab MPL Version 1.17) 
+Syntax: ^CS3,<Druckmode>,<Druckmarkenteiler>,<Distanz>,<Alarmmode>, 
+<ignoriere Richtung>,<PS mit Offset> 
+Option Extended und WSM (bis MPL Version 1.17) 
+Syntax: ^CS3,<Druckmode>,<Druckmarkenteiler>,<Distanz>,<WSM>, 
+<FTC>,<OPS>,<Alarmmode>,<ignoriere Richtung>,<PS mit Offset> 
+7.1.2 Übertragen des Druckmodes 
+Der Wert des Druckmodes setzt sich aus einzelnen Werten zusammen, die addiert werden 
+müssen, um die Einstellungen des ProgPar zu aktivieren. 
+Druckstart Wert 
+Dauerdruck 4 
+Produktsensor 1 
+Repetition 5 
+Starttaste 0 
+PS- Pegel Wert 
+PS Pegel invers 2 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 49
+C-Interface 
+Befehle des Signal-Managers 
+Startrichtung Wert 
+Start nur vorwärts 16 
+Beispiel: Die Druckauslösung soll durch den Produktsensor erfolgen, PS- Pegel 
+soll nicht invertiert sein und der Start soll nur vorwärts erfolgen. 
+Druckstart + PS- Pegel + Startrichtung = Druckmode ; 
+Der zu übertragende Wert: 17 = 1 + 0 + 16. 
+7.1.3 Übertragen des Druckmarkenteilers 
+In den Druckmarkenteiler kann max. 250 eingetragen werden. Der zu übertragende Wert kann 
+somit zwischen 1 und 250 liegen. 
+7.1.4 Übertragen der Distanz 
+Die Distanz kann max. 65535 mm betragen. Der zu übertragende Wert kann somit zwischen 0 und 
+65535 liegen. 
+7.1.5 Übertragung der DM- Parameter der WSM (nur mit Option WSM) 
+Die Parameterwerte müssen addiert werden, um auf den Übertragungswert zu kommen. 
+Beispiel: Ende → Start; ProdCounter zählt immer. Der zu übertragende 
+Wert ist 3. 
+Parameter Wert 
+Ende → Start 1 
+Start → Start 0 
+Parameter Wert 
+ProdCounter zählt immer 2 
+7.1.6 Übertragung der Flugzeit (nur mit Option WSM) 
+Der zu übertragende Wert der Flugzeit darf zwischen 0 und max. 250 sein. 
+7.1.7 Übertragung des OPS- Mode (nur mit Option WSM) 
+OPS Wert 
+Aus 0 
+im Druck 2 
+immer 1 
+50 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Signal-Managers
+7.1.8 Übertragung des Alarmmode (ab MPL-Version 1.17) 
+Alarmmode Verhalten Wert 
+notReady Der alphaJET C ist nicht betriebsbereit, (READY-LED leuchtet 
+nicht), das Alarm-Relais wird angesteuert. 
+1 
+Service Servicemaßnahmen am alphaJET C müssen vorgenommen 
+werden. (SERVICE-LED leuchtet), das Alarm-Relais wird 
+angesteuert. 
+2 
+Fehler Ein Fehler ist am alphaJET C aufgetreten (ERROR-LED 
+leuchtet), das Alarm-Relais wird angesteuert. 
+4 
+Invers Die Ansteuerung des Alarm-Relais wird invertiert. 8 
+Es können mehrere Modes aktiviert werden indem die Werte addiert werden. (z.B. Fehler und 
+Service: 6) Das Alarmrelais schaltet, wenn eines der aktivierten Modes mit dem Druckerzustand 
+übereinstimmt. Ist keine Auswahl aktiviert, verhält sich das Alarmrelais passiv. 
+7.1.9 Übertragung „ignoriere Richtung“ (ab MPL-Version 1.17) 
+Wert 1 aktiviert die Funktion und Wert 0 deaktiviert sie. Bei Aktivierung wird die automatische 
+Richtungsumkehrung ausgeschaltet. 
+7.1.10 Übertragung „PS mit Offset“ (ab MPL-Version 1.17) 
+Der Offset kann max. 65535 mm betragen. Der zu übertragende Wert kann somit zwischen 0 und 
+65535 liegen. 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 51
+C-Interface 
+Befehle des Signal-Managers 
+7.2 Textlisten-Parameter - Programm “TextList” 
+• Die Übertragungsparameter müssen durch ein Komma getrennt werden. 
+7.2.1 Textlistengröße 
+• Signal 2 (^CS2) 
+Die Größe der Liste darf maximal aus 50 Texten bestehen. 
+Beispiel: ^CS2,45 
+Die Liste besteht aus 45 Texten. 
+7.2.2 Übertragen der Texte 
+• Signal 4 (^CS4) 
+Die Texte der Textliste werden einzeln übertragen. 
+Beispiel: ^CS4,<Speicherplatz>,<Textname>,<Kopfstehend>,<Anzahl>,<Offset> 
+Parameter Bedeutung 
+Speicherplatz Listenposition des Textes 
+Textname Name des Drucktextes 
+Kopfstehend Der Drucktext wird kopfstehend gedruckt, wenn eine 1 geschickt wird, 
+bei 0 wird normal gedruckt. 
+Anzahl Anzahl der Druckwiederholungen eines Drucktextes, bis der nächste 
+Name der Textliste geladen und gedruckt wird. 
+Offset Offset des Textes zwischen Druckauslösung und Druck 
+7.2.3 Textliste löschen 
+• Signal5 (^CS5) 
+Die gesamte Textliste wird durch das Senden von ^CS5 gelöscht. 
+52 Version 1.08.1 / 03.04.2006 1001.1285_BS-DE
+C-Interface
+Befehle des Signal-Managers
+7.3 ^CS4 – ExtText-Parameter – Programm „ExtText” 
+7.3.1 Übertragungsparameter 
+• Signal 4 (^CS4) 
+• Die Übertragungsparameter müssen durch ein Komma getrennt werden. 
+• Textindex von 0-7 
+7.3.2 Übertragen der Texte 
+Syntax: ^CS4,<Index>,<Textname> 
+Parameter Bedeutung 
+Index Dem Text zugewiesener Index 
+Textname Drucktext 
+1001.1285_BS-DE Version 1.08.1 / 03.04.2006 53
